@@ -10,6 +10,8 @@ import ProductRow from './ProductRow';
 class ProductTable extends Component{
 	constructor(){
 		super();
+		this.safeProductData = Object.assign({},productData)
+		// this.safeProductData = {...productData}
 		this.productData = productData;
 		this.state = {
 			productsByCategory: {}
@@ -17,6 +19,21 @@ class ProductTable extends Component{
 	}
 
 	componentWillMount(){
+		this.formatData();
+	}
+
+	componentWillReceiveProps(newProps){
+		console.log(newProps);
+		const searchTerm = newProps.searchTerm.toLowerCase();
+		var tempProducts = [];
+		this.safeProductData.data.map((item)=>{
+			const itemName = item.name.toLowerCase();
+			console.log(itemName)
+			if(itemName.indexOf(searchTerm) != -1){
+				tempProducts.push(item)
+			}
+		});
+		this.productData.data = tempProducts;
 		this.formatData();
 	}
 
@@ -36,6 +53,13 @@ class ProductTable extends Component{
 	}
 
 	render(){
+
+		// console.log(this.props.searchTerm);
+		// this.setState({
+		// 	products: {}
+		// })
+
+
 		// Init a local var to hold our product rows
 		var rows = [];
 		// Outter for loop, is going through teh categories.
@@ -43,7 +67,7 @@ class ProductTable extends Component{
 		// It will run as many times as there are categories
 		for(var key in this.state.productsByCategory){
 			// console.log(key1);
-			console.log(this.state.productsByCategory[key]);
+			// console.log(this.state.productsByCategory[key]);
 			rows.push(<ProductCategoryRow key={key} header={key} />);
 			// Internal map through THIS category.
 			this.state.productsByCategory[key].map((item,index)=>{
